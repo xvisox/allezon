@@ -1,7 +1,13 @@
 package pl.mimuw.allezon.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
+@Value
+@Jacksonized
+@Builder
 public class Product {
     @JsonProperty("product_id")
     private int productId;

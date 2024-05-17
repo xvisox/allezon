@@ -1,9 +1,7 @@
-package pl.mimuw.allezon;
+package pl.mimuw.allezon.controller;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,14 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pl.mimuw.allezon.domain.Action;
 import pl.mimuw.allezon.domain.Aggregate;
-import pl.mimuw.allezon.domain.AggregatesQueryResult;
-import pl.mimuw.allezon.domain.UserProfileResult;
+import pl.mimuw.allezon.dto.response.AggregatesQueryResult;
+import pl.mimuw.allezon.dto.response.UserProfileResult;
 import pl.mimuw.allezon.domain.UserTagEvent;
 
 @RestController
-public class EchoClient {
-
-    private static final Logger log = LoggerFactory.getLogger(EchoClient.class);
+public class EchoController {
 
     @PostMapping("/user_tags")
     public ResponseEntity<Void> addUserTag(@RequestBody(required = false) UserTagEvent userTag) {
