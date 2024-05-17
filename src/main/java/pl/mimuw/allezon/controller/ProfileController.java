@@ -14,7 +14,7 @@ import pl.mimuw.allezon.service.ProfileService;
 
 @RestController
 @AllArgsConstructor(onConstructor_ = @__(@Autowired))
-public class EchoController {
+public class ProfileController {
 
     private final ProfileService profileService;
 
@@ -32,18 +32,6 @@ public class EchoController {
             @RequestParam("time_range") String timeRangeStr,
             @RequestParam(defaultValue = "200") int limit,
             @RequestBody(required = false) UserProfileResult expectedResult) {
-
-        return ResponseEntity.ok(expectedResult);
-    }
-
-    @PostMapping("/aggregates")
-    public ResponseEntity<AggregatesQueryResult> getAggregates(@RequestParam("time_range") String timeRangeStr,
-            @RequestParam("action") Action action,
-            @RequestParam("aggregates") List<Aggregate> aggregates,
-            @RequestParam(value = "origin", required = false) String origin,
-            @RequestParam(value = "brand_id", required = false) String brandId,
-            @RequestParam(value = "category_id", required = false) String categoryId,
-            @RequestBody(required = false) AggregatesQueryResult expectedResult) {
 
         return ResponseEntity.ok(expectedResult);
     }

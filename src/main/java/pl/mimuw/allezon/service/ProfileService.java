@@ -30,9 +30,7 @@ public class ProfileService {
 
     public void addUserTag(final UserTagEvent userTag) {
         while (true) {
-            final ProfileEntity profile = Objects.requireNonNullElse(aerospikeTemplate.findById(userTag.getCookie(), ProfileEntity.class),
-                    new ProfileEntity(userTag.getCookie(), 0, List.of(), List.of()));
-
+            final ProfileEntity profile = getOrCreateProfile(userTag);
             final ProfileEntity updatedProfile = getUpdatedProfile(profile, userTag);
             final WritePolicy writePolicy = createWritePolicy(profile);
 
@@ -48,17 +46,29 @@ public class ProfileService {
         }
     }
 
+    private ProfileEntity getOrCreateProfile(final UserTagEvent userTag) {
+        return Objects.requireNonNullElse(
+                aerospikeTemplate.findById(userTag.getCookie(), ProfileEntity.class),
+                new ProfileEntity(userTag.getCookie(), 0, List.of(), List.of())
+        );
+    }
+
     private ProfileEntity getUpdatedProfile(final ProfileEntity profile, final UserTagEvent userTag) {
-        final List<UserTag> updatedViews = userTag.getAction().equals(Action.VIEW) ?
-                addNewTagToProfile(profile.views(), userTag) : profile.views();
-        final List<UserTag> updatedBuys = userTag.getAction().equals(Action.BUY) ?
-                addNewTagToProfile(profile.buys(), userTag) : profile.buys();
+        final List<UserTag> updatedViews = updateTagsIfNeeded(profile.views(), userTag, Action.VIEW);
+        final List<UserTag> updatedBuys = updateTagsIfNeeded(profile.buys(), userTag, Action.BUY);
 
         return new ProfileEntity(userTag.getCookie(), profile.generation(), updatedViews, updatedBuys);
     }
 
-    private List<UserTag> addNewTagToProfile(final List<UserTag> userTags, final UserTagEvent userTag) {
-        userTags.add(userTag);
+    private List<UserTag> updateTagsIfNeeded(final List<UserTag> userTags, final UserTagEvent userTag, final Action action) {
+        if (userTag.getAction().equals(action)) {
+            return addNewTagToProfile(userTags, userTag);
+        }
+        return userTags;
+    }
+
+    private List<UserTag> addNewTagToProfile(final List<UserTag> userTags, final UserTagEvent userTagEvent) {
+        userTags.add(userTagEvent.toUserTag());
         return userTags.stream()
                 .sorted(Comparator.comparing(UserTag::getTime).reversed())
                 .limit(MAX_PROFILE_SIZE)
