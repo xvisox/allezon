@@ -3,7 +3,7 @@ package pl.mimuw.allezon.dto.response;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-import pl.mimuw.allezon.domain.UserTagEvent;
+import pl.mimuw.allezon.dto.request.UserTagEvent;
 
 import java.util.List;
 

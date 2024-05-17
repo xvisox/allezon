@@ -1,29 +1,32 @@
 package pl.mimuw.allezon.controller;
 
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import pl.mimuw.allezon.domain.Action;
-import pl.mimuw.allezon.domain.Aggregate;
-import pl.mimuw.allezon.dto.response.AggregatesQueryResult;
-import pl.mimuw.allezon.dto.response.UserProfileResult;
-import pl.mimuw.allezon.domain.UserTagEvent;
+import pl.mimuw.allezon.dto.request.UserTagEvent;
+import pl.mimuw.allezon.service.ProfileService;
 
 @RestController
+@AllArgsConstructor(onConstructor_ = @__(@Autowired))
 public class EchoController {
 
-    @PostMapping("/user_tags")
-    public ResponseEntity<Void> addUserTag(@RequestBody(required = false) UserTagEvent userTag) {
+    private final ProfileService profileService;
 
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @PostMapping(value = "/user_tags", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void addUserTag(
+            @RequestBody(required = false) UserTagEvent userTag
+    ) {
+        profileService.addUserTag(userTag);
     }
 
+    /*
     @PostMapping("/user_profiles/{cookie}")
     public ResponseEntity<UserProfileResult> getUserProfile(@PathVariable("cookie") String cookie,
             @RequestParam("time_range") String timeRangeStr,
@@ -44,4 +47,5 @@ public class EchoController {
 
         return ResponseEntity.ok(expectedResult);
     }
+     */
 }

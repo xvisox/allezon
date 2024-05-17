@@ -1,19 +1,22 @@
 package pl.mimuw.allezon.domain;
 
-import java.time.Instant;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Value;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.jackson.Jacksonized;
 
-@Value
+import java.time.Instant;
+
+@Getter
+@FieldDefaults(level= AccessLevel.PRIVATE)
+@EqualsAndHashCode
 @Jacksonized
 @Builder
-public class UserTagEvent {
+public class UserTag {
     Instant time;
-    String cookie;
-
     String country;
     Device device;
     Action action;
