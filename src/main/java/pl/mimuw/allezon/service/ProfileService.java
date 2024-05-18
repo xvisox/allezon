@@ -8,6 +8,7 @@ import com.aerospike.client.policy.WritePolicy;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.data.aerospike.core.AerospikeTemplate;
 import org.springframework.stereotype.Service;
 import pl.mimuw.allezon.Constants;
@@ -39,10 +40,12 @@ public class ProfileService {
 
             try {
                 aerospikeTemplate.persist(updatedProfile, writePolicy);
-                return;
-            } catch (final AerospikeException up) {
-                if (up.getResultCode() != ResultCode.GENERATION_ERROR) {
-                    throw up;
+                break;
+            } catch (final RecoverableDataAccessException up) {
+                if (up.getCause() instanceof AerospikeException cause) {
+                    if (cause.getResultCode() != ResultCode.GENERATION_ERROR) {
+                        throw up;
+                    }
                 }
                 log.warn("Generation error for cookie={}", userTag.getCookie());
             }

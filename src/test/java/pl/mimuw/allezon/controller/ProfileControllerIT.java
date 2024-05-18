@@ -18,16 +18,16 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @Slf4j
 public class ProfileControllerIT extends AbstractIT {
-
 
     @Test
     void testUserProfile() {
         // given
         final String userId = UUID.randomUUID().toString();
-        final UserTagEvent userTagEvent = createUserTagEvent(userId, Instant.parse("2022-03-22T12:23:00.000Z"), 2115);
+        final UserTagEvent userTagEvent = createUserTagEvent(userId, Instant.parse("2022-03-22T12:23:00.000Z"), 2115, Action.BUY);
 
         // when
         callPostUserTags(userTagEvent);
@@ -47,14 +47,20 @@ public class ProfileControllerIT extends AbstractIT {
         // given
         final String userId = UUID.randomUUID().toString();
         final Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        final List<UserTagEvent> userTagEvents = IntStream.range(0, Constants.MAX_PROFILE_SIZE + 50)
-                .mapToObj(i -> createUserTagEvent(userId, getTimestamp(now, i), i))
+        final int maxEvents = Constants.MAX_PROFILE_SIZE + 50;
+        final List<UserTagEvent> userTagViewEvents = IntStream.range(0, maxEvents)
+                .mapToObj(i -> createUserTagEvent(userId, getTimestamp(now, i), i, Action.VIEW))
                 .toList();
-        userTagEvents.forEach(this::callPostUserTags);
+        final List<UserTagEvent> userTagBuyEvents = IntStream.range(0, maxEvents)
+                .mapToObj(i -> createUserTagEvent(userId, getTimestamp(now, i), i, Action.BUY))
+                .toList();
+        Stream.concat(userTagBuyEvents.stream(), userTagViewEvents.stream())
+                .parallel()
+                .forEach(this::callPostUserTags);
 
         final String timeBegin = getTimestamp(now, 0)
                 .toString().replace("Z", "");
-        final String timeEnd = getTimestamp(now, Constants.MAX_PROFILE_SIZE + 50)
+        final String timeEnd = getTimestamp(now, maxEvents)
                 .toString().replace("Z", "");
         final var userProfilesResponse = callPostUserProfiles(userId, Map.of(
                 "time_range", timeBegin + "_" + timeEnd,
@@ -63,9 +69,10 @@ public class ProfileControllerIT extends AbstractIT {
 
         // then
         final ProfileEntity profile = getProfileFromDatabase(userId);
+        Assertions.assertEquals(maxEvents * 2, profile.getGeneration());
         Assertions.assertEquals(Constants.MAX_PROFILE_SIZE, profile.getBuys().size());
 
-        final AtomicInteger productId = new AtomicInteger(250);
+        final AtomicInteger productId = new AtomicInteger(maxEvents);
         userProfilesResponse.getBuys().forEach(userTagEvent ->
                 Assertions.assertEquals(productId.decrementAndGet(), userTagEvent.getProductInfo().getProductId())
         );
@@ -78,13 +85,14 @@ public class ProfileControllerIT extends AbstractIT {
         return profile;
     }
 
-    private static UserTagEvent createUserTagEvent(final String userId, final Instant timestamp, final int productId) {
+    private static UserTagEvent createUserTagEvent(final String userId, final Instant timestamp,
+                                                   final int productId, final Action action) {
         return UserTagEvent.builder()
                 .cookie(userId)
                 .time(timestamp.toString())
                 .country("Poland")
                 .device(Device.MOBILE)
-                .action(Action.BUY)
+                .action(action)
                 .origin("NIKE_WOMEN_SHOES_CAMPAIGN")
                 .productInfo(Product.builder()
                         .productId(productId)
