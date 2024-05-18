@@ -1,7 +1,5 @@
-# Aerospike database configuration file for use with systemd.
-
 service {
-	paxos-single-replica-limit 1 # Number of nodes where the replica count is automatically reduced to 1.
+    service-threads 10
 	proto-fd-max 15000
 }
 
@@ -23,9 +21,9 @@ network {
 		address eth0
 		port 3002
 
-    {% for svr in groups.aerospike %}
-    mesh-seed-address-port {{svr}} 3002
-    {% endfor %}
+        {% for svr in groups.aerospike %}
+        mesh-seed-address-port {{svr}} 3002
+        {% endfor %}
 
 		interval 150
 		timeout 10
@@ -43,26 +41,22 @@ network {
 }
 
 namespace mimuw {
-	replication-factor 2
-	memory-size 7G
-  nsup-period 15
+    replication-factor 2
+    memory-size 7G
+    nsup-period 15
 
-  stop-writes-pct 92
-  high-water-memory-pct 90
-  high-water-disk-pct 90
+    stop-writes-pct 92
+    high-water-memory-pct 90
+    high-water-disk-pct 90
 
-	storage-engine memory
+    storage-engine device {
+        filesize 6G
+        file /opt/aerospike/data/mimuw1.dat
+        file /opt/aerospike/data/mimuw2.dat
+        file /opt/aerospike/data/mimuw3.dat
+        file /opt/aerospike/data/mimuw4.dat
 
-	# To use file storage backing, comment out the line above and use the
-	# following lines instead.
-	#storage-engine device {
-  #  filesize 6G
-	#	file /opt/aerospike/data/mimuw1.dat
-  #  file /opt/aerospike/data/mimuw2.dat
-  #  file /opt/aerospike/data/mimuw3.dat
-  #  file /opt/aerospike/data/mimuw4.dat
-	#
-  #  defrag-lwm-pct 90
-  #  defrag-sleep 50
-	#}
+        defrag-lwm-pct 90
+        defrag-sleep 50
+    }
 }
