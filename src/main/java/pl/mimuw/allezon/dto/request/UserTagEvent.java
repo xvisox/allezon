@@ -9,13 +9,11 @@ import pl.mimuw.allezon.domain.Device;
 import pl.mimuw.allezon.domain.Product;
 import pl.mimuw.allezon.domain.UserTag;
 
-import java.time.Instant;
-
 @Value
 @Jacksonized
 @Builder
 public class UserTagEvent {
-    Instant time;
+    String time;
     String country;
     Device device;
     Action action;

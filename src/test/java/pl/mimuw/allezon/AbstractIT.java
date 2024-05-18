@@ -3,6 +3,8 @@ package pl.mimuw.allezon;
 import com.aerospike.client.policy.CommitLevel;
 import com.aerospike.client.policy.GenerationPolicy;
 import com.aerospike.client.policy.WritePolicy;
+import io.restassured.RestAssured;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +24,11 @@ public class AbstractIT {
 
     @LocalServerPort
     protected Integer port;
+
+    @BeforeEach
+    public void setUp() {
+        RestAssured.port = port;
+    }
 
     protected static WritePolicy createWritePolicy(final int generation) {
         WritePolicy writePolicy = new WritePolicy();

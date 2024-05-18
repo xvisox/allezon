@@ -18,6 +18,7 @@ import pl.mimuw.allezon.jpa.entity.ProfileEntity;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -68,8 +69,7 @@ public class ProfileService {
     }
 
     private List<UserTag> addNewTagToProfile(final List<UserTag> userTags, final UserTagEvent userTagEvent) {
-        userTags.add(userTagEvent.toUserTag());
-        return userTags.stream()
+        return Stream.concat(userTags.stream(), Stream.of(userTagEvent.toUserTag()))
                 .sorted(Comparator.comparing(UserTag::getTime).reversed())
                 .limit(MAX_PROFILE_SIZE)
                 .toList();
