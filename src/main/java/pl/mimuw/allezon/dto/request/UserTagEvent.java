@@ -9,6 +9,8 @@ import pl.mimuw.allezon.domain.Device;
 import pl.mimuw.allezon.domain.Product;
 import pl.mimuw.allezon.domain.UserTag;
 
+import java.time.Instant;
+
 @Value
 @Jacksonized
 @Builder
@@ -24,7 +26,7 @@ public class UserTagEvent {
 
     public UserTag toUserTag() {
         return UserTag.builder()
-                .time(time)
+                .timestamp(Instant.parse(time).toEpochMilli())
                 .country(country)
                 .device(device)
                 .action(action)
