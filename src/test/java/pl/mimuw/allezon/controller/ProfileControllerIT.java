@@ -34,7 +34,7 @@ public class ProfileControllerIT extends AbstractIT {
         // when
         callPostUserTags(userTagEvent);
         final var userProfilesResponse = callPostUserProfiles(userId,
-                Map.of("time_range", timeRange)
+                Map.of(Constants.TIME_RANGE_PARAM, timeRange)
         );
         log.info("User profiles: {}", userProfilesResponse);
 
@@ -66,8 +66,8 @@ public class ProfileControllerIT extends AbstractIT {
         final String timeEnd = getTimestamp(now, maxEvents)
                 .toString().replace("Z", "");
         final var userProfilesResponse = callPostUserProfiles(userId, Map.of(
-                "time_range", timeBegin + "_" + timeEnd,
-                "limit", 100
+                Constants.TIME_RANGE_PARAM, timeBegin + "_" + timeEnd,
+                Constants.LIMIT_PARAM, 100
         ));
 
         // then
