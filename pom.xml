@@ -45,13 +45,9 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
         <!-- Aerospike -->
         <dependency>
             <groupId>com.aerospike</groupId>
@@ -63,10 +59,18 @@
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
             <version>4.1.2</version>
         </dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>embedded-aerospike</artifactId>
             <version>3.1.6</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.rest-assured</groupId>
@@ -129,5 +133,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
