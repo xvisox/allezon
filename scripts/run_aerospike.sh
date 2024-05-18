@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
 
-scp -r ../aerospike st122@st122vm101.rtb-lab.pl:/
+PASSWORD="***REMOVED***"
+USER="st122"
+HOST="st122vm101.rtb-lab.pl"
+REMOTE_DIR="/home/${USER}"
+LOCAL_DIR="../aerospike"
+ANSIBLE_PLAYBOOK="aerospike.yaml"
+INVENTORY="hosts"
+EXTRA_VARS="ansible_user=${USER} ansible_password=${PASSWORD} ansible_ssh_extra_args='-o StrictHostKeyChecking=no'"
 
-ssh st122@st122vm101.rtb-lab.pl
+sshpass -p "${PASSWORD}" scp -r "${LOCAL_DIR}" ${USER}@${HOST}:${REMOTE_DIR}
 
-ansible-playbook --extra-vars "ansible_user=st122 ansible_password=***REMOVED*** ansible_ssh_extra_args='-o StrictHostKeyChecking=no'" -i hosts aerospike.yaml
+sshpass -p "${PASSWORD}" ssh ${USER}@${HOST} << EOF
+cd aerospike
+ansible-playbook --extra-vars "${EXTRA_VARS}" -i ${INVENTORY} ${ANSIBLE_PLAYBOOK}
+EOF
