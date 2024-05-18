@@ -27,12 +27,14 @@ public class ProfileControllerIT extends AbstractIT {
     void testUserProfile() {
         // given
         final String userId = UUID.randomUUID().toString();
-        final UserTagEvent userTagEvent = createUserTagEvent(userId, Instant.parse("2022-03-22T12:23:00.000Z"), 2115, Action.BUY);
+        final Instant eventTime = Instant.parse("2022-03-22T12:23:00.000Z");
+        final UserTagEvent userTagEvent = createUserTagEvent(userId, eventTime, 2115, Action.BUY);
+        final String timeRange = "2022-03-22T12:15:00.000_2022-03-22T12:30:00.000";
 
         // when
         callPostUserTags(userTagEvent);
         final var userProfilesResponse = callPostUserProfiles(userId,
-                Map.of("time_range", "2022-03-22T12:15:00.000_2022-03-22T12:30:00.000")
+                Map.of("time_range", timeRange)
         );
         log.info("User profiles: {}", userProfilesResponse);
 
@@ -40,13 +42,14 @@ public class ProfileControllerIT extends AbstractIT {
         Assertions.assertEquals(userId, userProfilesResponse.getCookie());
         Assertions.assertEquals(1, userProfilesResponse.getBuys().size());
         Assertions.assertEquals(0, userProfilesResponse.getViews().size());
+        Assertions.assertEquals(eventTime.toString(), userProfilesResponse.getBuys().get(0).getTime());
     }
 
     @Test
     void testUserProfileMaxSize() {
         // given
         final String userId = UUID.randomUUID().toString();
-        final Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        final Instant now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
         final int maxEvents = Constants.MAX_PROFILE_SIZE + 50;
         final List<UserTagEvent> userTagViewEvents = IntStream.range(0, maxEvents)
                 .mapToObj(i -> createUserTagEvent(userId, getTimestamp(now, i), i, Action.VIEW))
@@ -73,9 +76,10 @@ public class ProfileControllerIT extends AbstractIT {
         Assertions.assertEquals(Constants.MAX_PROFILE_SIZE, profile.getBuys().size());
 
         final AtomicInteger productId = new AtomicInteger(maxEvents);
-        userProfilesResponse.getBuys().forEach(userTagEvent ->
-                Assertions.assertEquals(productId.decrementAndGet(), userTagEvent.getProductInfo().getProductId())
-        );
+        userProfilesResponse.getBuys().forEach(userTagEvent -> {
+            Assertions.assertEquals(productId.decrementAndGet(), userTagEvent.getProductInfo().getProductId());
+            Assertions.assertEquals(getTimestamp(now, productId.get()).toString(), userTagEvent.getTime());
+        });
     }
 
     private ProfileEntity getProfileFromDatabase(final String userId) {
