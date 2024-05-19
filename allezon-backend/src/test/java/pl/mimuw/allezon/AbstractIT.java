@@ -1,6 +1,7 @@
 package pl.mimuw.allezon;
 
 import io.restassured.RestAssured;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
@@ -43,8 +44,11 @@ public class AbstractIT {
     @LocalServerPort
     protected Integer port;
 
+    @SneakyThrows
     @BeforeEach
     protected void setUp() {
+        // wait for Kafka to start
+        Thread.sleep(2000);
         RestAssured.port = port;
     }
 

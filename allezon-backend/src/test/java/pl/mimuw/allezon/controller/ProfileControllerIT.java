@@ -62,7 +62,7 @@ public class ProfileControllerIT extends AbstractIT {
                 .mapToObj(i -> createUserTagEvent(userId, getTimestamp(now, i), i, Action.BUY))
                 .toList();
         Stream.concat(userTagBuyEvents.stream(), userTagViewEvents.stream())
-                .parallel()
+                // .parallel()
                 .forEach(this::callPostUserTags);
 
         final String timeBegin = getTimestamp(now, 0)
