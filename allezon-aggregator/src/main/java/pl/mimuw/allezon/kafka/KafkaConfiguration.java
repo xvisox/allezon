@@ -17,9 +17,8 @@ import java.util.Map;
 
 @Configuration
 @AllArgsConstructor(onConstructor_ = @__(@Autowired))
-public class KafkaTestConfiguration {
+public class KafkaConfiguration {
 
-    @Autowired
     private final KafkaProperties kafkaProperties;
 
     @Bean
@@ -39,7 +38,7 @@ public class KafkaTestConfiguration {
     public ConcurrentKafkaListenerContainerFactory<String, UserTagEvent> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, UserTagEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-        factory.setConcurrency(1);
+        factory.setConcurrency(kafkaProperties.getConcurrency());
         return factory;
     }
 }
