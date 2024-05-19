@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import pl.mimuw.allezon.dto.request.UserTagEvent;
-import pl.mimuw.allezon.dto.response.UserProfileResult;
+import pl.mimuw.allezon.dto.response.UserProfileResponse;
 
 import java.util.Map;
 
@@ -47,16 +47,16 @@ public class AbstractIT {
                 .statusCode(204);
     }
 
-    protected UserProfileResult callPostUserProfiles(final String userId, final Map<String, Object> queryParams) {
+    protected UserProfileResponse callPostUserProfiles(final String userId, final Map<String, Object> queryParams) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("cookie", userId)
+                .pathParam(Constants.COOKIE_PARAM, userId)
                 .queryParams(queryParams)
                 .when()
                 .post(USER_PROFILES_PATH)
                 .then()
                 .statusCode(200)
                 .extract()
-                .as(UserProfileResult.class);
+                .as(UserProfileResponse.class);
     }
 }

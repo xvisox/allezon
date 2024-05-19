@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import pl.mimuw.allezon.Constants;
 import pl.mimuw.allezon.dto.request.UserTagEvent;
-import pl.mimuw.allezon.dto.response.UserProfileResult;
+import pl.mimuw.allezon.dto.response.UserProfileResponse;
 import pl.mimuw.allezon.service.ProfileService;
 
 @Slf4j
@@ -45,16 +44,16 @@ public class ProfileController {
     @Operation(summary = "Get user profile")
     @ApiResponses(value = {
             @ApiResponse(responseCode = Constants.HTTP_OK, description = "User profile returned",
-                    content = @Content(schema = @Schema(implementation = UserProfileResult.class))),
+                    content = @Content(schema = @Schema(implementation = UserProfileResponse.class))),
             @ApiResponse(responseCode = Constants.HTTP_INTERNAL_SERVER_ERROR, description = "Internal server error",
                     content = @Content())
     })
     @PostMapping(value = "/user_profiles/{cookie}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserProfileResult getUserProfile(
+    public UserProfileResponse getUserProfile(
             @PathVariable(Constants.COOKIE_PARAM) String cookie,
             @RequestParam(Constants.TIME_RANGE_PARAM) String timeRangeStr,
             @RequestParam(defaultValue = Constants.MAX_PROFILE_SIZE_STR) int limit,
-            @RequestBody(required = false) UserProfileResult expectedResult
+            @RequestBody(required = false) UserProfileResponse expectedResult
     ) {
         log.debug("Expected result: {}", expectedResult);
         return profileService.getUserProfile(cookie, timeRangeStr, limit);

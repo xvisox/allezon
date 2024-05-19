@@ -9,7 +9,7 @@ import java.util.List;
 @Value
 @Jacksonized
 @Builder
-public class AggregatesQueryResult {
+public class AggregatesQueryResponse {
     List<String> columns;
     List<List<String>> rows;
 }

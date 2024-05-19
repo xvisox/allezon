@@ -12,7 +12,7 @@ import java.util.List;
 @Value
 @Jacksonized
 @Builder
-public class UserProfileResult {
+public class UserProfileResponse {
 
     @Schema(description = "The user's cookie identifier")
     String cookie;

@@ -10,12 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.data.aerospike.core.AerospikeTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pl.mimuw.allezon.Constants;
 import pl.mimuw.allezon.domain.Action;
 import pl.mimuw.allezon.domain.UserTag;
 import pl.mimuw.allezon.dto.request.UserTagEvent;
-import pl.mimuw.allezon.dto.response.UserProfileResult;
+import pl.mimuw.allezon.dto.response.UserProfileResponse;
 import pl.mimuw.allezon.jpa.entity.ProfileEntity;
 
 import java.time.Instant;
@@ -31,8 +32,11 @@ import java.util.stream.Stream;
 public class ProfileService {
 
     private final AerospikeTemplate aerospikeTemplate;
+    private final KafkaTemplate<String, UserTagEvent> kafkaTemplate;
 
     public void addUserTag(final UserTagEvent userTag) {
+        kafkaTemplate.send(Constants.USER_TAG_TOPIC, userTag);
+
         while (true) {
             final ProfileEntity profile = getOrCreateProfile(userTag);
             final ProfileEntity updatedProfile = getUpdatedProfile(profile, userTag);
@@ -52,7 +56,7 @@ public class ProfileService {
         }
     }
 
-    public UserProfileResult getUserProfile(final String cookie, final String timeRange, final int limit) {
+    public UserProfileResponse getUserProfile(final String cookie, final String timeRange, final int limit) {
         final String[] timeRanges = timeRange.split("_");
         final long timeBegin = parseTimestamp(timeRanges[0]);
         final long timeEnd = parseTimestamp(timeRanges[1]);
@@ -61,7 +65,7 @@ public class ProfileService {
         final List<UserTagEvent> views = filterUserTags(profile.getViews(), cookie, timeBegin, timeEnd, limit);
         final List<UserTagEvent> buys = filterUserTags(profile.getBuys(), cookie, timeBegin, timeEnd, limit);
 
-        return UserProfileResult.builder()
+        return UserProfileResponse.builder()
                 .cookie(cookie)
                 .views(views)
                 .buys(buys)
