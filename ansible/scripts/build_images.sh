@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd ../allezon-backend
+cd ../../allezon-backend || return
 mvn clean install -f pom.xml
 
 # docker login --username username

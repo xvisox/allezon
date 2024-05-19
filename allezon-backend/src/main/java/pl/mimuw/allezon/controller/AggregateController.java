@@ -17,6 +17,7 @@ import pl.mimuw.allezon.Constants;
 import pl.mimuw.allezon.domain.Action;
 import pl.mimuw.allezon.domain.Aggregate;
 import pl.mimuw.allezon.dto.response.AggregatesQueryResponse;
+import pl.mimuw.allezon.service.AggregateService;
 
 import java.util.List;
 
@@ -24,6 +25,8 @@ import java.util.List;
 @RestController
 @AllArgsConstructor(onConstructor_ = @__(@Autowired))
 public class AggregateController {
+
+    private final AggregateService aggregateService;
 
     @Operation(summary = "Get aggregated user tags")
     @ApiResponses(value = {
@@ -43,6 +46,6 @@ public class AggregateController {
             @RequestBody(required = false) AggregatesQueryResponse expectedResult
     ) {
         log.debug("Expected result: {}", expectedResult);
-        return null;
+        return aggregateService.getAggregates(timeRangeStr, action, aggregates, origin, brandId, categoryId);
     }
 }

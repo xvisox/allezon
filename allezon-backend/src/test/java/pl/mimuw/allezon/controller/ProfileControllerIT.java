@@ -43,6 +43,10 @@ public class ProfileControllerIT extends AbstractIT {
         Assertions.assertEquals(1, userProfilesResponse.getBuys().size());
         Assertions.assertEquals(0, userProfilesResponse.getViews().size());
         Assertions.assertEquals(eventTime.toString(), userProfilesResponse.getBuys().get(0).getTime());
+
+        final UserTagEvent buyEvent = kafkaTestListener.pollUserTagEvent();
+        Assertions.assertNotNull(buyEvent);
+        Assertions.assertEquals(userTagEvent, buyEvent);
     }
 
     @Test
