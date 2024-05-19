@@ -12,7 +12,7 @@
     </parent>
 
     <groupId>pl.mimuw</groupId>
-    <artifactId>allezon</artifactId>
+    <artifactId>allezon-backend</artifactId>
     <version>${revision}</version>
 
     <properties>
@@ -86,7 +86,7 @@
     </dependencies>
 
     <build>
-        <finalName>allezon</finalName>
+        <finalName>allezon-backend</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

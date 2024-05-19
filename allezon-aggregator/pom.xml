@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>pl.mimuw</groupId>
-    <artifactId>allezon-aggregateor</artifactId>
+    <artifactId>allezon-aggregator</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
