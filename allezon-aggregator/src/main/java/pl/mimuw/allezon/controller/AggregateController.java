@@ -19,7 +19,6 @@ import pl.mimuw.allezon.dto.response.AggregatesQueryResponse;
 import pl.mimuw.allezon.service.AggregateService;
 
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @RestController
