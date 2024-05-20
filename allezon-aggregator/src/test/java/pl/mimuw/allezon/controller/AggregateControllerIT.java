@@ -62,7 +62,7 @@ public class AggregateControllerIT extends AbstractIT {
         Assertions.assertNotNull(response.getRows());
         Assertions.assertEquals(1, response.getRows().size());
         Assertions.assertEquals(3, response.getRows().get(0).size());
-        Assertions.assertEquals(response.getRows().get(0).get(0), "2022-03-22T12:25:00Z");
+        Assertions.assertEquals(response.getRows().get(0).get(0), "2022-03-22T12:25:00");
     }
 
     @Test
