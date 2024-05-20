@@ -134,7 +134,7 @@ public class AggregateService {
     private List<String> createRow(final long timestampMins, final Action action, final String origin, final String brandId,
                                    final String categoryId, final AggregateEntity aggregate, final List<Aggregate> aggregates) {
         final List<String> row = new ArrayList<>();
-        row.add(Instant.ofEpochSecond(timestampMins * 60).toString()); // fixme
+        row.add(Instant.ofEpochSecond(timestampMins * 60).toString());
         row.add(action.name());
         if (origin != null) row.add(origin);
         if (brandId != null) row.add(brandId);
