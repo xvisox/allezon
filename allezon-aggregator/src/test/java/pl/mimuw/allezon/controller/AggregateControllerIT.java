@@ -110,7 +110,6 @@ public class AggregateControllerIT extends AbstractIT {
         final AggregatesQueryResponse response = callGetAggregates(
                 timeRange, action, aggregates, origin, brandId, categoryId
         );
-        log.info("response: {}", response);
         Assertions.assertNotNull(response.getRows());
         Assertions.assertEquals(1, response.getRows().size());
         Assertions.assertEquals(7, response.getRows().get(0).size());

@@ -68,7 +68,6 @@ public class AggregateService {
 
     @Scheduled(cron = "${app.aggregate.cron:*/30 * * ? * *}")
     private void flushCurrentBucket() {
-        log.info("Flushing current bucket");
         withMutex(() -> {
             var temp = backupBucket;
             backupBucket = currentBucket;

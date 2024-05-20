@@ -65,15 +65,23 @@ public class AbstractIT {
             final String timeRange, final Action action, final List<Aggregate> aggregates,
             final String origin, final String brandId, final String categoryId
     ) {
-        return given()
+        var temp = given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .queryParam(Constants.TIME_RANGE_PARAM, timeRange)
                 .queryParam(Constants.ACTION_PARAM, action)
-                .queryParam(Constants.AGGREGATES_PARAM, aggregates)
-                .queryParam(Constants.ORIGIN_PARAM, origin)
-                .queryParam(Constants.BRAND_ID_PARAM, brandId)
-                .queryParam(Constants.CATEGORY_ID_PARAM, categoryId)
-                .when()
+                .queryParam(Constants.AGGREGATES_PARAM, aggregates);
+
+        if (origin != null) {
+            temp = temp.queryParam(Constants.ORIGIN_PARAM, origin);
+        }
+        if (brandId != null) {
+            temp = temp.queryParam(Constants.BRAND_ID_PARAM, brandId);
+        }
+        if (categoryId != null) {
+            temp = temp.queryParam(Constants.CATEGORY_ID_PARAM, categoryId);
+        }
+
+        return temp.when()
                 .get("/aggregates")
                 .then()
                 .statusCode(200)
