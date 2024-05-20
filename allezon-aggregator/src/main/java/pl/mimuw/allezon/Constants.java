@@ -20,4 +20,6 @@ public class Constants {
 
     public static final String USER_TAG_TOPIC = "user-tag-topic";
     public static final String DEFAULT_GROUP_ID = "allezon";
+
+    public static final long EXPIRATION_SECONDS = 24 * 60 * 60; // 24 hours
 }

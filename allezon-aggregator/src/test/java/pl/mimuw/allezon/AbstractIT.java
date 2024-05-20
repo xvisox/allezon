@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.data.aerospike.core.AerospikeTemplate;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -19,12 +20,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import pl.mimuw.allezon.domain.Action;
 import pl.mimuw.allezon.domain.Aggregate;
-import pl.mimuw.allezon.dto.request.UserTagEvent;
+import pl.mimuw.allezon.domain.UserTagMessage;
 import pl.mimuw.allezon.dto.response.AggregatesQueryResponse;
-import pl.mimuw.allezon.dto.response.UserProfileResponse;
-import pl.mimuw.allezon.kafka.KafkaTestListener;
 
-import java.util.Map;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
@@ -32,14 +31,14 @@ import static io.restassured.RestAssured.given;
 @DirtiesContext
 @AutoConfigureObservability
 @ActiveProfiles("it")
-@SpringBootTest(classes = AllezonApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = AggregatorApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AbstractIT {
-
-    private static final String USER_TAGS_PATH = "/user_tags";
-    private static final String USER_PROFILES_PATH = "/user_profiles/{cookie}";
 
     @Autowired
     protected AerospikeTemplate aerospikeTemplate;
+
+    @Autowired
+    protected KafkaTemplate<String, UserTagMessage> kafkaTemplate;
 
     @LocalServerPort
     protected Integer port;
@@ -62,43 +61,20 @@ public class AbstractIT {
         registry.add("app.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
     }
 
-    @Autowired
-    protected KafkaTestListener kafkaTestListener;
-
-    protected void callPostUserTags(final UserTagEvent userTagEvent) {
-        given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(userTagEvent)
-                .when()
-                .post(USER_TAGS_PATH)
-                .then()
-                .statusCode(204);
-    }
-
-    protected UserProfileResponse callPostUserProfiles(final String userId, final Map<String, Object> queryParams) {
+    protected AggregatesQueryResponse callGetAggregates(
+            final String timeRange, final Action action, final List<Aggregate> aggregates,
+            final String origin, final String brandId, final String categoryId
+    ) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam(Constants.COOKIE_PARAM, userId)
-                .queryParams(queryParams)
+                .queryParam(Constants.TIME_RANGE_PARAM, timeRange)
+                .queryParam(Constants.ACTION_PARAM, action)
+                .queryParam(Constants.AGGREGATES_PARAM, aggregates)
+                .queryParam(Constants.ORIGIN_PARAM, origin)
+                .queryParam(Constants.BRAND_ID_PARAM, brandId)
+                .queryParam(Constants.CATEGORY_ID_PARAM, categoryId)
                 .when()
-                .post(USER_PROFILES_PATH)
-                .then()
-                .statusCode(200)
-                .extract()
-                .as(UserProfileResponse.class);
-    }
-
-    protected AggregatesQueryResponse callPostAggregates() {
-        return given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .queryParam(Constants.TIME_RANGE_PARAM, "2022-03-22T12:25:00_2022-03-22T12:28:00")
-                .queryParam(Constants.ACTION_PARAM, Action.BUY.name())
-                .queryParam(Constants.AGGREGATES_PARAM, Aggregate.COUNT.name())
-                .queryParam(Constants.ORIGIN_PARAM, "NIKE_WOMEN_SHOES_CAMPAIGN")
-                .queryParam(Constants.BRAND_ID_PARAM, "NIKE")
-                .queryParam(Constants.CATEGORY_ID_PARAM, "WOMEN_SHOES")
-                .when()
-                .post("/aggregates")
+                .get("/aggregates")
                 .then()
                 .statusCode(200)
                 .extract()
