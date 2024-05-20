@@ -19,6 +19,7 @@ import pl.mimuw.allezon.dto.response.AggregatesQueryResponse;
 import pl.mimuw.allezon.service.AggregateService;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -43,6 +44,9 @@ public class AggregateController {
             @RequestParam(value = Constants.BRAND_ID_PARAM, required = false) String brandId,
             @RequestParam(value = Constants.CATEGORY_ID_PARAM, required = false) String categoryId
     ) {
+        origin = Objects.equals(origin, "") ? null : origin;
+        brandId = Objects.equals(brandId, "") ? null : brandId;
+        categoryId = Objects.equals(categoryId, "") ? null : categoryId;
         return aggregateService.getAggregates(timeRangeStr, action, aggregates, origin, brandId, categoryId);
     }
 }

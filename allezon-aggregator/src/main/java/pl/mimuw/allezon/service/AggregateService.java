@@ -140,8 +140,12 @@ public class AggregateService {
         if (origin != null) row.add(origin);
         if (brandId != null) row.add(brandId);
         if (categoryId != null) row.add(categoryId);
-        if (aggregates.contains(Aggregate.COUNT)) row.add(String.valueOf(aggregate.getCount()));
-        if (aggregates.contains(Aggregate.SUM_PRICE)) row.add(String.valueOf(aggregate.getPriceSum()));
+        for (final Aggregate aggregateType : aggregates) {
+            switch (aggregateType) {
+                case COUNT -> row.add(String.valueOf(aggregate.getCount()));
+                case SUM_PRICE -> row.add(String.valueOf(aggregate.getPriceSum()));
+            }
+        }
         return row;
     }
 
