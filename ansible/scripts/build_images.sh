@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 
-cd ../../allezon-backend || return
+DOCKERHUB_USERNAME="integraal"
+
+# Docker login (optional, uncomment if needed)
+# docker login --username "$DOCKERHUB_USERNAME"
+
+cd ../../allezon-backend || exit
 mvn clean install -f pom.xml
+docker build . -t "$DOCKERHUB_USERNAME/allezon-backend"
+docker push "$DOCKERHUB_USERNAME/allezon-backend:latest"
 
-# docker login --username username
-docker build . -t integraal/allezon-backend
-docker push integraal/allezon-backend:latest
-
-# TODO: build aggregator image
+cd ../allezon-aggregator || exit
+mvn clean install -f pom.xml
+docker build . -t "$DOCKERHUB_USERNAME/allezon-aggregator"
+docker push "$DOCKERHUB_USERNAME/allezon-aggregator:latest"
