@@ -11,7 +11,7 @@ import java.time.Instant;
 @Jacksonized
 @Builder
 public class UserTag {
-    Long timestamp;
+    long timestampMillis;
     String country;
     Device device;
     Action action;
@@ -20,7 +20,7 @@ public class UserTag {
 
     public UserTagEvent toUserTagEvent(String cookie) {
         return UserTagEvent.builder()
-                .time(Instant.ofEpochMilli(timestamp).toString())
+                .time(Instant.ofEpochMilli(timestampMillis).toString())
                 .country(country)
                 .device(device)
                 .action(action)

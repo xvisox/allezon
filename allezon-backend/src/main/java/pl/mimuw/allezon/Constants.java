@@ -25,4 +25,5 @@ public class Constants {
     public static final String MAX_PROFILE_SIZE_STR = "" + MAX_PROFILE_SIZE;
 
     public static final String USER_TAG_TOPIC = "user-tag-topic";
+    public static final String DEFAULT_GROUP_ID = "allezon";
 }

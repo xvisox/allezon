@@ -9,6 +9,7 @@ import pl.mimuw.allezon.domain.Action;
 import pl.mimuw.allezon.domain.Device;
 import pl.mimuw.allezon.domain.Product;
 import pl.mimuw.allezon.domain.UserTag;
+import pl.mimuw.allezon.domain.UserTagMessage;
 
 import java.time.Instant;
 
@@ -42,12 +43,23 @@ public class UserTagEvent {
 
     public UserTag toUserTag() {
         return UserTag.builder()
-                .timestamp(Instant.parse(time).toEpochMilli())
+                .timestampMillis(Instant.parse(time).toEpochMilli())
                 .country(country)
                 .device(device)
                 .action(action)
                 .origin(origin)
                 .productInfo(productInfo)
+                .build();
+    }
+
+    public UserTagMessage toUserTagMessage() {
+        return UserTagMessage.builder()
+                .timestampSecs(Instant.parse(time).getEpochSecond())
+                .action(action)
+                .origin(origin)
+                .brandId(productInfo.getBrandId())
+                .categoryId(productInfo.getCategoryId())
+                .price(productInfo.getPrice())
                 .build();
     }
 }

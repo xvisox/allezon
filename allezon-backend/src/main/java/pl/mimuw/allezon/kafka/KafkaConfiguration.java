@@ -10,7 +10,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import pl.mimuw.allezon.dto.request.UserTagEvent;
+import pl.mimuw.allezon.domain.UserTagMessage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +22,7 @@ public class KafkaConfiguration {
     private final KafkaProperties kafkaProperties;
 
     @Bean
-    public ProducerFactory<String, UserTagEvent> producerFactory() {
+    public ProducerFactory<String, UserTagMessage> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -31,7 +31,7 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public KafkaTemplate<String, UserTagEvent> kafkaTemplate() {
+    public KafkaTemplate<String, UserTagMessage> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }

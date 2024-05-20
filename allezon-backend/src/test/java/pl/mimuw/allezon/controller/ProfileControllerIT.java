@@ -8,6 +8,7 @@ import pl.mimuw.allezon.Constants;
 import pl.mimuw.allezon.domain.Action;
 import pl.mimuw.allezon.domain.Device;
 import pl.mimuw.allezon.domain.Product;
+import pl.mimuw.allezon.domain.UserTagMessage;
 import pl.mimuw.allezon.dto.request.UserTagEvent;
 import pl.mimuw.allezon.jpa.entity.ProfileEntity;
 
@@ -44,9 +45,9 @@ public class ProfileControllerIT extends AbstractIT {
         Assertions.assertEquals(0, userProfilesResponse.getViews().size());
         Assertions.assertEquals(eventTime.toString(), userProfilesResponse.getBuys().get(0).getTime());
 
-        final UserTagEvent buyEvent = kafkaTestListener.pollUserTagEvent();
-        Assertions.assertNotNull(buyEvent);
-        Assertions.assertEquals(userTagEvent, buyEvent);
+        final UserTagMessage buyMessage = kafkaTestListener.pollUserTagMessage();
+        Assertions.assertNotNull(buyMessage);
+        Assertions.assertEquals(userTagEvent.toUserTagMessage(), buyMessage);
     }
 
     @Test

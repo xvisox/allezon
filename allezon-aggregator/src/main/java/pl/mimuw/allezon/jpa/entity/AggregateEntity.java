@@ -15,12 +15,12 @@ import pl.mimuw.allezon.Constants;
 public class AggregateEntity {
 
     @Id
-    private String hash;
+    private String hashKey;
 
     @Expiration
-    private Long expirationSeconds;
+    private long expirationSeconds;
 
-    private Long count;
+    private long count;
 
-    private Long priceSum;
+    private long sumPrice;
 }

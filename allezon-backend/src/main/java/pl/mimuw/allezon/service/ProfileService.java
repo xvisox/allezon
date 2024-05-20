@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import pl.mimuw.allezon.Constants;
 import pl.mimuw.allezon.domain.Action;
 import pl.mimuw.allezon.domain.UserTag;
+import pl.mimuw.allezon.domain.UserTagMessage;
 import pl.mimuw.allezon.dto.request.UserTagEvent;
 import pl.mimuw.allezon.dto.response.UserProfileResponse;
 import pl.mimuw.allezon.jpa.entity.ProfileEntity;
@@ -32,14 +33,14 @@ import java.util.stream.Stream;
 public class ProfileService {
 
     private final AerospikeTemplate aerospikeTemplate;
-    private final KafkaTemplate<String, UserTagEvent> kafkaTemplate;
+    private final KafkaTemplate<String, UserTagMessage> kafkaTemplate;
 
-    public void addUserTag(final UserTagEvent userTag) {
-        kafkaTemplate.send(Constants.USER_TAG_TOPIC, userTag);
+    public void addUserTag(final UserTagEvent userTagEvent) {
+        kafkaTemplate.send(Constants.USER_TAG_TOPIC, userTagEvent.toUserTagMessage());
 
         while (true) {
-            final ProfileEntity profile = getOrCreateProfile(userTag);
-            final ProfileEntity updatedProfile = getUpdatedProfile(profile, userTag);
+            final ProfileEntity profile = getOrCreateProfile(userTagEvent);
+            final ProfileEntity updatedProfile = getUpdatedProfile(profile, userTagEvent);
             final WritePolicy writePolicy = createWritePolicy(profile);
 
             try {
@@ -51,19 +52,19 @@ public class ProfileService {
                         throw up;
                     }
                 }
-                log.warn("Generation error for cookie={}", userTag.getCookie());
+                log.warn("Generation error for cookie={}", userTagEvent.getCookie());
             }
         }
     }
 
     public UserProfileResponse getUserProfile(final String cookie, final String timeRange, final int limit) {
         final String[] timeRanges = timeRange.split("_");
-        final long timeBegin = parseTimestamp(timeRanges[0]);
-        final long timeEnd = parseTimestamp(timeRanges[1]);
+        final long timeBeginSeconds = parseTimestamp(timeRanges[0]);
+        final long timeEndSeconds = parseTimestamp(timeRanges[1]);
 
         final ProfileEntity profile = getUserProfileByCookie(cookie);
-        final List<UserTagEvent> views = filterUserTags(profile.getViews(), cookie, timeBegin, timeEnd, limit);
-        final List<UserTagEvent> buys = filterUserTags(profile.getBuys(), cookie, timeBegin, timeEnd, limit);
+        final List<UserTagEvent> views = filterUserTags(profile.getViews(), cookie, timeBeginSeconds, timeEndSeconds, limit);
+        final List<UserTagEvent> buys = filterUserTags(profile.getBuys(), cookie, timeBeginSeconds, timeEndSeconds, limit);
 
         return UserProfileResponse.builder()
                 .cookie(cookie)
@@ -75,7 +76,7 @@ public class ProfileService {
     private List<UserTagEvent> filterUserTags(final List<UserTag> views, final String cookie,
                                               final long timeBegin, final long timeEnd, final int limit) {
         return views.stream()
-                .filter(userTag -> timeBegin <= userTag.getTimestamp() && userTag.getTimestamp() < timeEnd)
+                .filter(userTag -> timeBegin <= userTag.getTimestampMillis() && userTag.getTimestampMillis() < timeEnd)
                 .limit(limit)
                 .map(userTag -> userTag.toUserTagEvent(cookie))
                 .toList();
@@ -86,30 +87,30 @@ public class ProfileService {
                 .orElseThrow(RuntimeException::new);
     }
 
-    private ProfileEntity getOrCreateProfile(final UserTagEvent userTag) {
+    private ProfileEntity getOrCreateProfile(final UserTagEvent userTagEvent) {
         return Objects.requireNonNullElse(
-                aerospikeTemplate.findById(userTag.getCookie(), ProfileEntity.class),
-                new ProfileEntity(userTag.getCookie(), 0, List.of(), List.of())
+                aerospikeTemplate.findById(userTagEvent.getCookie(), ProfileEntity.class),
+                new ProfileEntity(userTagEvent.getCookie(), 0, List.of(), List.of())
         );
     }
 
-    private ProfileEntity getUpdatedProfile(final ProfileEntity profile, final UserTagEvent userTag) {
-        final List<UserTag> updatedViews = updateTagsIfNeeded(profile.getViews(), userTag, Action.VIEW);
-        final List<UserTag> updatedBuys = updateTagsIfNeeded(profile.getBuys(), userTag, Action.BUY);
+    private ProfileEntity getUpdatedProfile(final ProfileEntity profile, final UserTagEvent userTagEvent) {
+        final List<UserTag> updatedViews = updateTagsIfNeeded(profile.getViews(), userTagEvent, Action.VIEW);
+        final List<UserTag> updatedBuys = updateTagsIfNeeded(profile.getBuys(), userTagEvent, Action.BUY);
 
-        return new ProfileEntity(userTag.getCookie(), profile.getGeneration(), updatedViews, updatedBuys);
+        return new ProfileEntity(userTagEvent.getCookie(), profile.getGeneration(), updatedViews, updatedBuys);
     }
 
-    private List<UserTag> updateTagsIfNeeded(final List<UserTag> userTags, final UserTagEvent userTag, final Action action) {
-        if (userTag.getAction().equals(action)) {
-            return addNewTagToProfile(userTags, userTag);
+    private List<UserTag> updateTagsIfNeeded(final List<UserTag> userTags, final UserTagEvent userTagEvent, final Action action) {
+        if (userTagEvent.getAction().equals(action)) {
+            return addNewTagToProfile(userTags, userTagEvent);
         }
         return userTags;
     }
 
     private List<UserTag> addNewTagToProfile(final List<UserTag> userTags, final UserTagEvent userTagEvent) {
         return Stream.concat(userTags.stream(), Stream.of(userTagEvent.toUserTag()))
-                .sorted(Comparator.comparing(UserTag::getTimestamp).reversed())
+                .sorted(Comparator.comparing(UserTag::getTimestampMillis).reversed())
                 .limit(Constants.MAX_PROFILE_SIZE)
                 .toList();
     }
