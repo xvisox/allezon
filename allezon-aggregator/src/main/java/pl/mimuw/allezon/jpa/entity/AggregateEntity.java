@@ -20,7 +20,7 @@ public class AggregateEntity {
     @Expiration
     private long expirationSeconds;
 
-    private int count;
+    private long count;
 
-    private int priceSum;
+    private long priceSum;
 }

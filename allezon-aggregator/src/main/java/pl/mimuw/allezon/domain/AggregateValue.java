@@ -9,7 +9,7 @@ public class AggregateValue {
     private long count;
     private long priceSum;
 
-    public void add(final int price) {
+    public void add(final long price) {
         count++;
         priceSum += price;
     }
