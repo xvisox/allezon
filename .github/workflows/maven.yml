@@ -1,11 +1,6 @@
 # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Java CI with Maven
 
 on:
@@ -33,3 +28,22 @@ jobs:
     - name: Build allezon-aggregator with Maven
       working-directory: ./allezon-aggregator
       run: mvn clean install
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    - name: Build and push allezon-backend Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./allezon-backend
+        push: true
+        repository: integraal/allezon-backend
+        tags: latest
+    - name: Build and push allezon-aggregator Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./allezon-aggregator
+        push: true
+        repository: integraal/allezon-aggregator
+        tags: latest
