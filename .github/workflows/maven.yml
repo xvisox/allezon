@@ -31,11 +31,7 @@ jobs:
       working-directory: ./allezon-aggregator
       run: mvn clean install
       
-  build-and-push-docker-images:
-
-    runs-on: ubuntu-latest
-
-    steps:
+      
     - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
@@ -45,15 +41,13 @@ jobs:
     - name: Build and push allezon-backend Docker image
       uses: docker/build-push-action@v5
       with:
-        context: ./allezon-backend
+        context: allezon-backend
         push: true
-        repository: integraal/allezon-backend
-        tags: latest
+        tags: integraal/allezon-backend:latest
         
     - name: Build and push allezon-aggregator Docker image
       uses: docker/build-push-action@v5
       with:
-        context: ./allezon-aggregator
+        context: allezon-aggregator
         push: true
-        repository: integraal/allezon-aggregator
-        tags: latest
+        tags: integraal/allezon-aggregator:latest
