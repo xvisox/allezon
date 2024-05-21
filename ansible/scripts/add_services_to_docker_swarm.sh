@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 PASSWORD="***REMOVED***"
-USER="st122"
-HOST="st122vm101.rtb-lab.pl"
-DOCKERHUB_USERNAME="integraal"
+USER="st119"
+HOST="st119vm101.rtb-lab.pl"
+DOCKERHUB_USERNAME="xvisox"
 BACKEND_REPLICAS=10
 AGGREGATOR_REPLICAS=2
 

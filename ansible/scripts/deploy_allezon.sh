@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 chmod u+x ./*.sh
 
 ./install_ansible.sh
@@ -6,5 +8,5 @@ chmod u+x ./*.sh
 ./install_docker.sh
 ./install_kafka.sh
 ./create_kafka_topic.sh
-./build_images.sh
+#./build_images.sh
 ./add_services_to_docker_swarm.sh

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DOCKERHUB_USERNAME="integraal"
+DOCKERHUB_USERNAME="xvisox"
 
 # Docker login (optional, uncomment if needed)
 # docker login --username "$DOCKERHUB_USERNAME"
