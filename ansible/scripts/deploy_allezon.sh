@@ -2,6 +2,7 @@
 
 chmod u+x ./*.sh
 
+./load_env_vars.sh
 ./install_ansible.sh
 ./add_machines_to_known_hosts.sh
 ./install_aerospike.sh
