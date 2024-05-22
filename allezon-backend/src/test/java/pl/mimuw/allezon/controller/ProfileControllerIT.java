@@ -90,7 +90,6 @@ public class ProfileControllerIT extends AbstractIT {
     private ProfileEntity getProfileFromDatabase(final String userId) {
         final ProfileEntity profile = aerospikeTemplate.findById(userId, ProfileEntity.class);
         Assertions.assertNotNull(profile);
-        log.info("Profile entity: {}", profile);
         return profile;
     }
 

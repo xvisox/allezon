@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 PASSWORD="***REMOVED***"
-USER="st122"
-HOST="st122vm101.rtb-lab.pl"
+USER="st119"
+HOST="st119vm101.rtb-lab.pl"
 REMOTE_DIR="/home/${USER}"
 LOCAL_DIR="../aerospike"
 ANSIBLE_PLAYBOOK="aerospike.yaml"
