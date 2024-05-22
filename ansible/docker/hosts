@@ -1,8 +1,8 @@
 [docker]
-st119vm1[01:03].rtb-lab.pl
+st122vm1[01:04].rtb-lab.pl
 
 [swarm_manager]
-st119vm101.rtb-lab.pl
+st122vm101.rtb-lab.pl
 
 [swarm_nodes]
-st119vm1[02:03].rtb-lab.pl
+st122vm1[02:04].rtb-lab.pl
