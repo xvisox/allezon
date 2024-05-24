@@ -44,4 +44,27 @@ Initially, we added new Aerospike nodes, but unfortunately, it didn't help much,
 of any service. So, we decided to compress the profiles, which helped significantly. However, it's still not enough to
 have only four Aerospike nodes. Screenshots of the results are available in the `images` directory.
 
+## Integration tests
+
+Our system consists of multiple services, including two microservices (Backend, Aggregator), Aerospike database and Kafka Messaging Queue, which need to communicate with each other seamlessly.
+To ensure that everything works as expected, we decided to incorporate integration tests as part of our solution and made use of the following libraries:
+- `Testcontainers` -- to run Docker containers with Aerospike and Kafka
+- `Spring Boot Test` -- to run and test Spring Boot applications
+- `WireMock` -- to mock external services, such as Aggregator which acted as a client to Backend
+- `JUnit` -- to run tests
+- `RestAssured` -- to test if the API endpoints work as expected
+
+To run the tests, simply execute the following command in the `allezon-backend` or `allezon-aggreagator` directory:
+
+```bash
+mvn clean verify
+```
+
+## GitHub Actions
+
+To automate the process of building, testing and deploying our services, we decided to use GitHub Actions.
+In the `.github/workflows` directory, you can find the `maven.yml` file, which contains the configuration for the workflow
+which is triggered on every push or pull request to the `main` branch. The main purpose of this workflow is to build and test
+the services with maven. If the tests pass, the docker images are built and pushed to DockerHub.
+
 Authors: Hubert Michalski & Aleksander Bloch
