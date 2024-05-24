@@ -54,7 +54,7 @@ To ensure that everything works as expected, we decided to incorporate integrati
 - `JUnit` -- to run tests
 - `RestAssured` -- to test if the API endpoints work as expected
 
-To run the tests, simply execute the following command in the `allezon-backend` or `allezon-aggreagator` directory:
+To run the tests, simply execute the following command in the `allezon-backend` or `allezon-aggregator` directory:
 
 ```bash
 mvn clean verify
